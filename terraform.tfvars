@@ -123,6 +123,7 @@ byo_subnet_ids = ["subnet-023e9deec9c6b563c", "subnet-0544bcb7240a85a3c"]
 ## Bring IGW to skip it
 byo_igw = true
 
+
 ## 47. By default, this script will create new IAM roles, policy, and Instance Profiles for the Cloud Connector
 #byo_iam                                    = true
 
