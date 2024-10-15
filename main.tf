@@ -25,7 +25,7 @@ locals {
 #    child modules (vpc, igw, nat gateway, subnets, route tables)
 ################################################################################
 module "network" {
-  source                  = "./modules/terraform-zscc-network-aws"
+  source                  = "github.com/zscaler/terraform-aws-cloud-connector-modules//modules/terraform-zscc-network-aws"
   name_prefix             = var.name_prefix
   resource_tag            = random_string.suffix.result
   global_tags             = local.global_tags
