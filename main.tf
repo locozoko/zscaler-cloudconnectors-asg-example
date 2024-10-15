@@ -7,6 +7,7 @@ resource "random_string" "suffix" {
   special = false
 }
 
+
 ################################################################################
 # Map default tags with values to be assigned to all tagged resources
 ################################################################################
@@ -18,25 +19,37 @@ locals {
   }
 }
 
+
 ################################################################################
 # 1. Create/reference all network infrastructure resource dependencies for all 
 #    child modules (vpc, igw, nat gateway, subnets, route tables)
 ################################################################################
 module "network" {
-  source            = "./modules/terraform-zscc-network-aws"
+  source            = "github.com/zscaler/terraform-aws-cloud-connector-modules//modules/terraform-zscc-network-aws"
   name_prefix       = var.name_prefix
   resource_tag      = random_string.suffix.result
   global_tags       = local.global_tags
+  zpa_enabled       = var.zpa_enabled
+  workloads_enabled = var.workloads_enabled
   gwlb_enabled      = var.gwlb_enabled
   gwlb_endpoint_ids = module.gwlb_endpoint.gwlbe
+  az_count          = var.az_count
+  vpc_cidr          = var.vpc_cidr
+  public_subnets    = var.public_subnets
   cc_subnets        = var.cc_subnets
+  route53_subnets   = var.route53_subnets
   #bring-your-own variables
   byo_vpc                = var.byo_vpc
   byo_vpc_id             = var.byo_vpc_id
   byo_subnets            = var.byo_subnets
   byo_subnet_ids         = var.byo_subnet_ids
+  byo_igw                = var.byo_igw
+  byo_igw_id             = var.byo_igw_id
+  byo_ngw                = var.byo_ngw
+  byo_ngw_ids            = var.byo_ngw_ids
   cc_route_table_enabled = var.cc_route_table_enabled
 }
+
 
 ################################################################################
 # 2. Create specified number CC VMs per min_size / max_size which will span 
@@ -59,6 +72,7 @@ resource "local_file" "user_data_file" {
   filename = "../user_data"
 }
 
+
 ################################################################################
 # Locate Latest CC AMI by product code
 ################################################################################
@@ -73,6 +87,7 @@ data "aws_ami" "cloudconnector" {
 
   owners = ["aws-marketplace"]
 }
+
 
 # Create the specified CC VMs via Launch Template and Autoscaling Group
 module "cc_asg" {
@@ -123,6 +138,7 @@ module "cc_asg" {
   ]
 }
 
+
 ################################################################################
 # 3. Create IAM Policy, Roles, and Instance Profiles to be assigned to CC
 ################################################################################
@@ -140,6 +156,7 @@ module "cc_iam" {
   byo_iam_instance_profile_id = var.byo_iam_instance_profile_id
   # optional inputs. only required if byo_iam set to true
 }
+
 
 ################################################################################
 # 4. Create Security Group and rules to be assigned to CC mgmt and and service 
@@ -164,6 +181,7 @@ module "cc_sg" {
   # optional inputs. only required if byo_security_group set to true
 }
 
+
 ################################################################################
 # 5. Create GWLB in all CC subnets/availability zones. Create a Target Group 
 #    used by cc_asg module to auto associate instances
@@ -186,6 +204,7 @@ module "gwlb" {
   rebalance_enabled     = var.rebalance_enabled
 }
 
+
 ################################################################################
 # 6. Create a VPC Endpoint Service associated with GWLB and 1x GWLB Endpoint 
 #    per Cloud Connector subnet/availability zone.
@@ -201,6 +220,25 @@ module "gwlb_endpoint" {
   acceptance_required = var.acceptance_required
   allowed_principals  = var.allowed_principals
 }
+
+
+################################################################################
+# 7. Create Route 53 Resolver Rules and Endpoints for utilization with DNS 
+#    redirection to facilitate Cloud Connector ZPA service.
+#    This can optionally be enabled/disabled per variable "zpa_enabled".
+################################################################################
+module "route53" {
+  count          = var.zpa_enabled == true ? 1 : 0
+  source         = "github.com/zscaler/terraform-aws-cloud-connector-modules//modules/terraform-zscc-route53-aws"
+  name_prefix    = var.name_prefix
+  resource_tag   = random_string.suffix.result
+  global_tags    = local.global_tags
+  vpc_id         = module.network.vpc_id
+  r53_subnet_ids = module.network.route53_subnet_ids
+  domain_names   = var.domain_names
+  target_address = var.target_address
+}
+
 
 ################################################################################
 # 8. Create Lambda Function for Autoscaling support
@@ -224,6 +262,7 @@ locals {
     contains(local.lambda_python3_11_regions_list, var.aws_region)
   )
 }
+
 
 ################################################################################
 # Validation for Cloud Connector instance size and EC2 Instance Type 
