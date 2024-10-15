@@ -1,14 +1,14 @@
 ## 1. Zscaler Cloud Connector Provisioning URL E.g. connector.zscaler.net/api/v1/provUrl?name=aws_prov_url
-cc_vm_prov_url = "connector.zscalerthree.net/api/v1/provUrl?name=AWS_ASG_TerraformCloud"
+cc_vm_prov_url = "insert"
 
 ## 2. AWS Secrets Manager Secret Name from Secrets Manager E.g ZS/CC/credentials
-secret_name = "ZOLTAN/CC/ZS3"
+secret_name = "insert"
 
 ## 3. Cloud Connector cloud init provisioning listener port. Value of 80 or any number between 1024-65535. Default is 50000.
 http_probe_port = 50000
 
 ## 4. The name string for all Cloud Connector resources created by Terraform for Tag/Name attributes
-name_prefix = "ztest"
+name_prefix = "insert"
 
 ## 5. AWS region where Cloud Connector resources will be deployed
 aws_region = "us-east-1"
@@ -34,7 +34,7 @@ health_check_grace_period = 900
 instance_warmup = 0
 
 ## 15. Tag attribute "Owner" assigned to all resoure creation. (Default: "zscc-admin")
-owner_tag = "Zoltan-Test"
+owner_tag = "insert"
 
 ## 17. By default, GWLB deployments are configured as zonal. Uncomment if you want to enable cross-zone load balancing
 ##     functionality. Only applicable for gwlb deployment types. (Default: false)
@@ -76,7 +76,7 @@ target_cpu_util_value = 80
 sns_enabled = true
 
 ## 28. List of email addresses to input for sns topic subscriptions for autoscaling group notifications. Required if sns_enabled variable is true and byo_sns_topic false
-sns_email_list = ["zkovacs@zscaler.com", "zoltan@ikovacs.com"]
+sns_email_list = ["insert2", "insert2"]
 
 ## 29. Determine whether or not to create an AWS SNS topic and topic subscription for email alerts. Setting this variable to true implies you should also set variable sns_enabled to true
 #byo_sns_topic                              = false
@@ -112,13 +112,13 @@ zssupport_server       = "136.226.16.141/32"
 byo_vpc = true
 
 ## 40. Provide your existing VPC ID. Only uncomment and modify if you set byo_vpc to true. (Default: null)
-byo_vpc_id = "vpc-0bd2fa9f99d982a15"
+byo_vpc_id = "insert"
 
 ## 41. Bring your own subnets
 byo_subnets = true
 
 ## 42. Provide your existing Cloud Connector private subnet IDs
-byo_subnet_ids = ["subnet-023e9deec9c6b563c", "subnet-0544bcb7240a85a3c"]
+byo_subnet_ids = ["insert1", "insert2"]
 
 ## Bring IGW to skip it
 byo_igw = true
