@@ -1,7 +1,7 @@
 variable "aws_region" {
   type        = string
   description = "The AWS region."
-  default     = "us-east-1"
+  default     = "us-west-2"
 }
 
 variable "name_prefix" {
@@ -12,12 +12,6 @@ variable "name_prefix" {
     condition     = length(var.name_prefix) <= 12
     error_message = "Variable name_prefix must be 12 or less characters."
   }
-}
-
-variable "vpc_cidr" {
-  type        = string
-  description = "VPC IP CIDR Range. All subnet resources that might get created (public, workload, cloud connector) are derived from this /16 CIDR. If you require creating a VPC smaller than /16, you may need to explicitly define all other subnets via public_subnets, workload_subnets, cc_subnets, and route53_subnets variables"
-  default     = "10.1.0.0/16"
 }
 
 variable "public_subnets" {
@@ -32,28 +26,16 @@ variable "cc_subnets" {
   default     = null
 }
 
-variable "az_count" {
-  type        = number
-  description = "Default number of subnets to create based on availability zone"
-  default     = 2
-  validation {
-    condition = (
-      (var.az_count >= 1 && var.az_count <= 3)
-    )
-    error_message = "Input az_count must be set to a single value between 1 and 3. Note* some regions have greater than 3 AZs. Please modify az_count validation in variables.tf if you are utilizing more than 3 AZs in a region that supports it. https://aws.amazon.com/about-aws/global-infrastructure/regions_az/."
-  }
+variable "route53_subnets" {
+  type        = list(string)
+  description = "Route 53 Outbound Endpoint Subnets to create in VPC. This is only required if you want to override the default subnets that this code creates via vpc_cidr variable."
+  default     = null
 }
 
 variable "owner_tag" {
   type        = string
   description = "populate custom owner tag attribute"
   default     = "zscc-admin"
-}
-
-variable "tls_key_algorithm" {
-  type        = string
-  description = "algorithm for tls_private_key resource"
-  default     = "RSA"
 }
 
 variable "ccvm_instance_type" {
@@ -416,30 +398,6 @@ variable "byo_subnet_ids" {
   default     = null
 }
 
-variable "byo_igw" {
-  type        = bool
-  description = "Bring your own AWS VPC for Cloud Connector"
-  default     = false
-}
-
-variable "byo_igw_id" {
-  type        = string
-  description = "User provided existing AWS Internet Gateway ID"
-  default     = null
-}
-
-variable "byo_ngw" {
-  type        = bool
-  description = "Bring your own AWS NAT Gateway(s) Cloud Connector"
-  default     = false
-}
-
-variable "byo_ngw_ids" {
-  type        = list(string)
-  description = "User provided existing AWS NAT Gateway IDs"
-  default     = null
-}
-
 variable "byo_iam" {
   type        = bool
   description = "Bring your own IAM Instance Profile for Cloud Connector"
@@ -477,7 +435,7 @@ variable "cc_route_table_enabled" {
 }
 
 variable "key_name" {
-  description = "Set to NULL to not use an SSH EC2 KeyPair"
+  description = "The name of the existing AWS SSH key pair"
   type        = string
   default     = null
 }

@@ -10,12 +10,6 @@ By default, these templates store two critical files to the "examples" directory
    If this file is missing, you will NOT be able to make incremental changes to the environment resources without first importing state back to terraform manually.
 ***Disclaimer***
 
-VPC:         
-${module.network.vpc_id}
-
-All CC AZs:
-${join("\n", module.cc_asg.availability_zone)}
-
 GWLB Endpoint Service Name:
 ${module.gwlb_endpoint.vpce_service_name}
 

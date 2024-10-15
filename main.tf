@@ -1,5 +1,5 @@
 ################################################################################
-# Generate a unique random string for resource name assignment
+# Generate a unique random string for resource name assignment and key pair
 ################################################################################
 resource "random_string" "suffix" {
   length  = 8
@@ -19,6 +19,7 @@ locals {
   }
 }
 
+
 ################################################################################
 # 1. Create/reference all network infrastructure resource dependencies for all 
 #    child modules (vpc, igw, nat gateway, subnets, route tables)
@@ -28,22 +29,14 @@ module "network" {
   name_prefix       = var.name_prefix
   resource_tag      = random_string.suffix.result
   global_tags       = local.global_tags
-  workloads_enabled = var.workloads_enabled
   gwlb_enabled      = var.gwlb_enabled
   gwlb_endpoint_ids = module.gwlb_endpoint.gwlbe
-  az_count          = var.az_count
-  vpc_cidr          = var.vpc_cidr
-  public_subnets    = var.public_subnets
   cc_subnets        = var.cc_subnets
   #bring-your-own variables
   byo_vpc                = var.byo_vpc
   byo_vpc_id             = var.byo_vpc_id
   byo_subnets            = var.byo_subnets
   byo_subnet_ids         = var.byo_subnet_ids
-  byo_igw                = var.byo_igw
-  byo_igw_id             = var.byo_igw_id
-  byo_ngw                = var.byo_ngw
-  byo_ngw_ids            = var.byo_ngw_ids
   cc_route_table_enabled = var.cc_route_table_enabled
 }
 
