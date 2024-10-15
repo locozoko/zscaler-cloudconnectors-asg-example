@@ -404,6 +404,12 @@ variable "byo_subnet_ids" {
   default     = null
 }
 
+variable "byo_igw" {
+  type        = bool
+  description = "Bring your own AWS VPC for Cloud Connector"
+  default     = false
+}
+
 variable "az_count" {
   type        = number
   description = "Default number of subnets to create based on availability zone"

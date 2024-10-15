@@ -25,18 +25,18 @@ locals {
 #    child modules (vpc, igw, nat gateway, subnets, route tables)
 ################################################################################
 module "network" {
-  source            = "github.com/zscaler/terraform-aws-cloud-connector-modules//modules/terraform-zscc-network-aws"
-  name_prefix       = var.name_prefix
-  resource_tag      = random_string.suffix.result
-  global_tags       = local.global_tags
-  workloads_enabled = var.workloads_enabled
+  source       = "github.com/zscaler/terraform-aws-cloud-connector-modules//modules/terraform-zscc-network-aws"
+  name_prefix  = var.name_prefix
+  resource_tag = random_string.suffix.result
+  global_tags  = local.global_tags
+  #workloads_enabled = var.workloads_enabled
   gwlb_enabled      = var.gwlb_enabled
   gwlb_endpoint_ids = module.gwlb_endpoint.gwlbe
   az_count          = var.az_count
   vpc_cidr          = var.vpc_cidr
-  public_subnets    = var.public_subnets
-  cc_subnets        = var.cc_subnets
-  route53_subnets   = var.route53_subnets
+  #public_subnets    = var.public_subnets
+  cc_subnets = var.cc_subnets
+  #route53_subnets   = var.route53_subnets
   #bring-your-own variables
   byo_vpc                = var.byo_vpc
   byo_vpc_id             = var.byo_vpc_id
