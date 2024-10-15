@@ -7,7 +7,6 @@ resource "random_string" "suffix" {
   special = false
 }
 
-
 ################################################################################
 # Map default tags with values to be assigned to all tagged resources
 ################################################################################
@@ -18,7 +17,6 @@ locals {
     Vendor    = "Zscaler"
   }
 }
-
 
 ################################################################################
 # 1. Create/reference all network infrastructure resource dependencies for all 
@@ -39,7 +37,6 @@ module "network" {
   byo_subnet_ids         = var.byo_subnet_ids
   cc_route_table_enabled = var.cc_route_table_enabled
 }
-
 
 ################################################################################
 # 2. Create specified number CC VMs per min_size / max_size which will span 
@@ -62,7 +59,6 @@ resource "local_file" "user_data_file" {
   filename = "../user_data"
 }
 
-
 ################################################################################
 # Locate Latest CC AMI by product code
 ################################################################################
@@ -77,7 +73,6 @@ data "aws_ami" "cloudconnector" {
 
   owners = ["aws-marketplace"]
 }
-
 
 # Create the specified CC VMs via Launch Template and Autoscaling Group
 module "cc_asg" {
@@ -128,7 +123,6 @@ module "cc_asg" {
   ]
 }
 
-
 ################################################################################
 # 3. Create IAM Policy, Roles, and Instance Profiles to be assigned to CC
 ################################################################################
@@ -146,7 +140,6 @@ module "cc_iam" {
   byo_iam_instance_profile_id = var.byo_iam_instance_profile_id
   # optional inputs. only required if byo_iam set to true
 }
-
 
 ################################################################################
 # 4. Create Security Group and rules to be assigned to CC mgmt and and service 
@@ -171,7 +164,6 @@ module "cc_sg" {
   # optional inputs. only required if byo_security_group set to true
 }
 
-
 ################################################################################
 # 5. Create GWLB in all CC subnets/availability zones. Create a Target Group 
 #    used by cc_asg module to auto associate instances
@@ -194,7 +186,6 @@ module "gwlb" {
   rebalance_enabled     = var.rebalance_enabled
 }
 
-
 ################################################################################
 # 6. Create a VPC Endpoint Service associated with GWLB and 1x GWLB Endpoint 
 #    per Cloud Connector subnet/availability zone.
@@ -210,7 +201,6 @@ module "gwlb_endpoint" {
   acceptance_required = var.acceptance_required
   allowed_principals  = var.allowed_principals
 }
-
 
 ################################################################################
 # 8. Create Lambda Function for Autoscaling support
@@ -234,7 +224,6 @@ locals {
     contains(local.lambda_python3_11_regions_list, var.aws_region)
   )
 }
-
 
 ################################################################################
 # Validation for Cloud Connector instance size and EC2 Instance Type 
